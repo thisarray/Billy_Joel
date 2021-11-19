@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>piano</title>
+  <script src="../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>piano</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+&quot;&quot;&quot;One note piano keyboard.&quot;&quot;&quot;
+
+import pgzrun
+
+BLACK_KEY_WIDTH = 16
+&quot;&quot;&quot;Integer width in pixels of the black keys.&quot;&quot;&quot;
+
+WHITE_KEY_WIDTH = 20
+&quot;&quot;&quot;Integer width in pixels of the white keys.&quot;&quot;&quot;
+
+DURATION = 0.1
+&quot;&quot;&quot;Float duration in seconds to play each note.&quot;&quot;&quot;
+
+NOTES = [&#x27;C&#x27;, &#x27;D&#x27;, &#x27;E&#x27;, &#x27;F&#x27;, &#x27;G&#x27;, &#x27;A&#x27;, &#x27;B&#x27;]
+&quot;&quot;&quot;List of string notes from the lowest to the highest.&quot;&quot;&quot;
+
+OCTAVE_COUNT = 9
+&quot;&quot;&quot;Integer number of octaves on the piano.&quot;&quot;&quot;
+
+WIDTH = WHITE_KEY_WIDTH * len(NOTES) * OCTAVE_COUNT
+HEIGHT = 100
+TITLE = &#x27;piano&#x27;
+
+BLACK_KEY_HEIGHT = HEIGHT // 2
+&quot;&quot;&quot;Integer height in pixels of the black keys.&quot;&quot;&quot;
+
+blackKeys = []
+whiteKeys = []
+for octave in range(OCTAVE_COUNT):
+    for j, note in enumerate(NOTES):
+        key = ZRect(((octave * len(NOTES)) + j) * WHITE_KEY_WIDTH, 0,
+                    WHITE_KEY_WIDTH, HEIGHT)
+        key.note = note + str(octave)
+        whiteKeys.append(key)
+
+        if note in &#x27;CDFGA&#x27;:
+            key = ZRect((((octave * len(NOTES)) + j + 1) * WHITE_KEY_WIDTH) -
+                        (BLACK_KEY_WIDTH // 2), 0,
+                        BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT)
+            key.note = note + &#x27;#&#x27; + str(octave)
+            blackKeys.append(key)
+
+def draw():
+    for k in whiteKeys:
+        screen.draw.filled_rect(k, &#x27;white&#x27;)
+        screen.draw.rect(k, &#x27;black&#x27;)
+    # Draw black keys on top of the white keys
+    for k in blackKeys:
+        screen.draw.filled_rect(k, &#x27;black&#x27;)
+
+def on_mouse_down(pos):
+    # Detect clicking on a black key before a white key
+    # because black keys are on top
+    for pianoKeys in [blackKeys, whiteKeys]:
+        for k in pianoKeys:
+            if k.collidepoint(pos):
+                tone.play(k.note, DURATION)
+                return
+
+pgzrun.go()
+</code></pre>
+</main>
+
+<script>
+/*
+ * Integer width in pixels of the black keys.
+ */
+const BLACK_KEY_WIDTH = 16;
+
+/*
+ * Integer width in pixels of the white keys.
+ */
+const WHITE_KEY_WIDTH = 20;
+
+/*
+ * Number duration in seconds to play each note.
+ */
+const DURATION = 0.1;
+
+/*
+ * Array of string notes from the lowest to the highest.
+ */
+const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+
+/*
+ * Integer number of octaves on the piano.
+ */
+const OCTAVE_COUNT = 9;
+
+WIDTH = WHITE_KEY_WIDTH * NOTES.length * OCTAVE_COUNT;
+HEIGHT = 100;
+
+/*
+ * Integer height in pixels of the black keys.
+ */
+const BLACK_KEY_HEIGHT = Math.floor(HEIGHT / 2);
+
+var blackKeys, whiteKeys;
+
+function reset() {
+  blackKeys = [];
+  whiteKeys = [];
+
+  let j, key;
+  for (let octave = 0; octave < OCTAVE_COUNT; octave++) {
+    j = 0;
+    for (let note of NOTES) {
+      key = new Rect(((octave * NOTES.length) + j) * WHITE_KEY_WIDTH, 0, WHITE_KEY_WIDTH, HEIGHT);
+      key.note = note + octave;
+      whiteKeys.push(key);
+
+      if ((note === 'C') || (note === 'D') || (note === 'F') || (note === 'G') || (note === 'A')) {
+        key = new Rect((((octave * NOTES.length) + j + 1) * WHITE_KEY_WIDTH) - Math.floor(BLACK_KEY_WIDTH / 2), 0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT);
+        key.note = note + '#' + octave;
+        blackKeys.push(key);
+      }
+
+      j++;
+    }
+  }
+}
+
+function draw() {
+  for (let k of whiteKeys) {
+    screen.draw.filled_rect(k, 'white');
+    screen.draw.rect(k, 'black', 2);
+  }
+  // Draw black keys on top of the white keys
+  for (let k of blackKeys) {
+    screen.draw.filled_rect(k, 'black');
+  }
+}
+
+function on_mouse_down(pos) {
+  // Detect clicking on a black key before a white key because black keys are on top
+  for (let pianoKeys of [blackKeys, whiteKeys]) {
+    for (let k of pianoKeys) {
+      if (k.collidepoint(pos)) {
+        //console.log(k.note);
+        tone.play(k.note, DURATION);
+        return;
+      }
+    }
+  }
+}
+
+window.addEventListener('load', (event) => {
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
