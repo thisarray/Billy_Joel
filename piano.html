@@ -101,6 +101,10 @@ pgzrun.go()
 
 <script>
 /*
+ * One note piano keyboard.
+ */
+
+/*
  * Integer width in pixels of the black keys.
  */
 const BLACK_KEY_WIDTH = 16;
@@ -183,8 +187,7 @@ function on_mouse_down(pos) {
 }
 
 window.addEventListener('load', (event) => {
-  reset();
-  screen.set_mode('#screen', '#reset', '#pause');
+  screen.init();
 });
 </script>
 </body>
